@@ -1,0 +1,143 @@
+---
+title: "cNMF Paper data procesing"
+
+---
+
+
+
+```{r}
+usage.matrix <- read.table('GSE102827_cNMF/GSE102827_cNMF.usages.k_20.dt_0_08.consensus.txt',header = T, row.names = 1, check.names = F)
+basis.matrix <- read.table('GSE102827_cNMF/GSE102827_cNMF.gene_spectra_score.k_20.dt_0_08.txt',header = T, row.names = 1, check.names = F)
+basis.matrix <- t(basis.matrix)
+
+usage.by.cluster <- read.csv('GSE102827_cNMF/GSE102827_cNMF_usage_by_cluster_ordered.csv',header = T, row.names = 1, check.names = F)
+
+reordered.GEPs <- colnames(usage.by.cluster)
+
+normalized.usage.matrix.labeled <- read.csv('GSE102827_cNMF/GSE102827_cNMF.usages.k_20.dt_0_08.consensus_Normalized_Labeled.csv',header = T, row.names = 1, check.names = F) 
+
+labels.df <- data.frame(GEP_numbe = reordered.GEPs, GEP_name = colnames(normalized.usage.matrix.labeled))
+
+write.csv(labels.df, file = "GSE102827_cNMF/GSE102827_cNMF_GEP_labels_code.csv")
+
+
+activity.GEP.usage <- read.csv('GSE102827_cNMF/GSE102827_cNMF.activity_GEP_usage_by_class.csv',header = T, row.names = 1, check.names = F)
+
+colnames(activity.GEP.usage)[2:3] <- c("LRP_S", "LRP_D")
+
+activity.GEP.usage.2 <- activity.GEP.usage
+activity.GEP.usage[,1:6] <- activity.GEP.usage.2[,1:6]*100
+
+```
+
+#boxplot trial
+```{r}
+ ggplot(activity.GEP.usage, aes(max_identity_class, LRP_D, fill =
+                                   factor(stim), ))+
+    geom_boxplot(outlier.size = 0.3, outlier.alpha = 0)+
+    labs(fill = "stim")+
+    geom_point(position=position_jitterdodge(),alpha=0, size= 0.3) +
+    xlab("Identity Class")+ 
+    theme_bw(base_size = 16)+
+    ylim(0,100)+
+    theme(axis.text.x = element_text(angle = 20, size = 8, hjust = 1, vjust = 1))
+```
+
+
+
+
+
+
+```{r}
+
+
+
+p1 <- ggplot(activity.GEP.usage, aes(max_identity_class, ERP, fill =
+                                   factor(stim)))+
+    geom_boxplot(outlier.size = 0.3, outlier.alpha = 0)+
+    labs(fill = "stim")+
+    geom_point(position=position_jitterdodge(),alpha=0, size= 0.3) +
+    xlab("")+ 
+    theme_bw(base_size = 16)+
+    ylim(0,100)+
+    theme(axis.text.x = element_text(angle = 20, size = 8, hjust = 1, vjust = 1))
+
+
+p2 <- ggplot(activity.GEP.usage, aes(max_identity_class, LRP_S, fill =
+                                   factor(stim)))+
+    geom_boxplot(outlier.size = 0.3, outlier.alpha = 0)+
+    labs(fill = "stim")+
+    geom_point(position=position_jitterdodge(),alpha=0, size= 0.3) +
+    xlab("")+ 
+    theme_bw(base_size = 16)+
+    ylim(0,100)+
+    theme(axis.text.x = element_text(angle = 20, size = 8, hjust = 1, vjust = 1))
+
+p3 <- ggplot(activity.GEP.usage, aes(max_identity_class, LRP_D, fill =
+                                   factor(stim)))+
+    geom_boxplot(outlier.size = 0.3, outlier.alpha = 0)+
+    labs(fill = "stim")+
+    geom_point(position=position_jitterdodge(),alpha=0, size= 0.3) +
+    xlab("")+ 
+    theme_bw(base_size = 16)+
+    ylim(0,100)+
+    theme(axis.text.x = element_text(angle = 20, size = 8, hjust = 1, vjust = 1))
+
+p4 <- ggplot(activity.GEP.usage, aes(max_identity_class, Syn, fill =
+                                   factor(stim)))+
+    geom_boxplot(outlier.size = 0.3, outlier.alpha = 0)+
+    labs(fill = "stim")+
+    geom_point(position=position_jitterdodge(),alpha=0, size= 0.3) +
+    xlab("")+ 
+    theme_bw(base_size = 16)+
+    ylim(0,100)+
+    theme(axis.text.x = element_text(angle = 20, size = 8, hjust = 1, vjust = 1))
+
+p5 <- ggplot(activity.GEP.usage, aes(max_identity_class, NS, fill =
+                                   factor(stim)))+
+    geom_boxplot(outlier.size = 0.3, outlier.alpha = 0)+
+    labs(fill = "stim")+
+    geom_point(position=position_jitterdodge(),alpha=0, size= 0.3) +
+    xlab("")+ 
+    theme_bw(base_size = 16)+
+    ylim(0,100)+
+    theme(axis.text.x = element_text(angle = 20, size = 8, hjust = 1, vjust = 1))
+
+p6 <- ggplot(activity.GEP.usage, aes(max_identity_class, Other, fill =
+                                   factor(stim)))+
+    geom_boxplot(outlier.size = 0.3, outlier.alpha = 0)+
+    labs(fill = "stim")+
+    geom_point(position=position_jitterdodge(),alpha=0, size= 0.3) +
+    xlab("Identity Class")+ 
+    theme_bw(base_size = 16)+
+    ylim(0,100)+
+    theme(axis.text.x = element_text(angle = 20, size = 8, hjust = 1, vjust = 1))
+
+
+library(ggpubr)
+tiff("GSE102827_cNMF/combined_boxplots.tiff", width=6000, height=2000, res=300)
+
+pdf(file = "GSE102827_cNMF/Activity_boxplot_ME_102021_V6.pdf", onefile=TRUE, paper="a4", width = 8, height = 11)
+ggarrange(p1, p2, p3, p4, p5, p6, ncol = 1, nrow = 6)
+dev.off()
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
